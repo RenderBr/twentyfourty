@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 #![allow(unused_parens)]
-use std::{iter::Map, borrow::Borrow};
+use std::{iter::Map, borrow::{Borrow, BorrowMut}};
 
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::{prelude::*, html::input_data::keyboard_types::Key};
@@ -113,12 +113,13 @@ fn print_type_of<T>(_: &T) {
     println!("{}", std::any::type_name::<T>())
 }
 
-#[derive(Props)]
-struct RenderProps<'a> {
-    game: &'a GameGrid
-}
-fn Render<'a>(cx:Scope<'a, RenderProps>) -> Element<'a>{
-    let grid_rendered = cx.props.game.binding.iter().map(|row| {
+fn App(cx: Scope) -> Element {
+
+    let mut game = GameGrid::new();
+    game.startGame();
+
+    let grid_rendered = {
+        game.binding.iter().map(|row| {
         rsx!(div{
             class: "col col-xs",
             background_color:"gray",
@@ -126,25 +127,16 @@ fn Render<'a>(cx:Scope<'a, RenderProps>) -> Element<'a>{
             key: "{row}",
             "{row}",
         })
-    });   
-    cx.render(rsx! { grid_rendered })
-
-}
-
-
-// define a component that renders a div with the text "Hello, world!"
-fn App(cx: Scope) -> Element {
-
-    let mut game = GameGrid::new();
-    game.startGame();
-
+    })   
+};
+        
         cx.render(rsx! {
         div {
         width:"100%",
         height:"100%",
         tabindex: "0",
         onkeydown: move |evt| {
-            sendInput(evt.key(), &mut game);           
+            game.parseInput(evt.key());           
         },
         link {
             href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css",
@@ -155,9 +147,7 @@ fn App(cx: Scope) -> Element {
             width: "50%",
             div{
                 class: "row row-cols-4 text-center",
-                Render {
-                    game: &game,
-                }
+                grid_rendered,
             }
     
         }
