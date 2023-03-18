@@ -105,8 +105,7 @@ fn main() {
     dioxus_desktop::launch(App);
 }
 
-fn sendInput(key: Key){
-    let mut game = GameGrid::new();
+fn sendInput(key: Key, game: &mut GameGrid){
     game.parseInput(key);
 }
 
@@ -145,7 +144,7 @@ fn App(cx: Scope) -> Element {
         height:"100%",
         tabindex: "0",
         onkeydown: move |evt| {
-            sendInput(evt.key());           
+            sendInput(evt.key(), &mut game);           
         },
         link {
             href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css",
