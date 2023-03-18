@@ -136,7 +136,8 @@ fn Render<'a>(cx:Scope<'a, RenderProps>) -> Element<'a>{
 // define a component that renders a div with the text "Hello, world!"
 fn App(cx: Scope) -> Element {
 
-    let mut
+    let mut game = GameGrid::new();
+    game.startGame();
 
         cx.render(rsx! {
         div {
